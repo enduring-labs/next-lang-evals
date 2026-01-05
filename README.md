@@ -1,36 +1,152 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Langfuse Evals UI
 
-## Getting Started
+A generic evaluation UI for [Langfuse](https://langfuse.com) that runs on [Inngest](https://inngest.com) using your own LLM provider API keys (OpenAI, Google Gemini).
 
-First, run the development server:
+## Features
+
+- 🎯 **Prompt Management**: Browse, view, and manage your Langfuse prompts with a hierarchical folder structure
+- 🔬 **Draft & Eval**: Test prompt variations against historical traces with side-by-side comparisons
+- 📊 **Usage Statistics**: View prompt usage stats and trace data
+- 🤖 **Provider Support**: Run evals with OpenAI or Google Gemini models
+- 🔧 **Tool-Calling Support**: Automatic detection and support for prompts that use function calling
+- 🧠 **Fine-tuning**: Convert Langfuse traces to OpenAI fine-tuning format and start training jobs
+- ⚙️ **Structured Outputs**: Schema validation with automatic extraction from observation metadata
+
+## Prerequisites
+
+- Node.js 18+ and pnpm (or npm/yarn)
+- A [Langfuse](https://langfuse.com) account and project
+- [Inngest](https://inngest.com) account (free tier works)
+- [Vercel Blob Storage](https://vercel.com/docs/storage/vercel-blob) or compatible storage
+- API keys for your chosen LLM providers (OpenAI and/or Google Gemini)
+
+## Quick Start
+
+### 1. Clone and Install
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <your-repo-url>
+cd next-lang-evals
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copy the example environment file:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cp env.example .env.local
+```
 
-## Learn More
+Edit `.env.local` with your credentials:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Langfuse Configuration
+LANGFUSE_SECRET_KEY=sk-lf-...
+LANGFUSE_PUBLIC_KEY=pk-lf-...
+LANGFUSE_BASE_URL=https://us.cloud.langfuse.com
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# 🔴 REQUIRED: Your Langfuse Project ID
+# Find this in your Langfuse project URL
+# Example: https://us.cloud.langfuse.com/project/abc123def456/prompts
+#          Your project ID is: abc123def456
+NEXT_PUBLIC_LANGFUSE_PROJECT_ID=your-project-id-here
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+NEXT_PUBLIC_LANGFUSE_BASE_URL=https://us.cloud.langfuse.com
 
-## Deploy on Vercel
+# OpenAI Configuration
+OPENAI_API_KEY=sk-...
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Google Gemini Configuration (optional)
+GOOGLE_API_KEY=...
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Vercel Blob Storage
+BLOB_READ_WRITE_TOKEN=vercel_blob_...
+
+# Inngest Configuration
+INNGEST_EVENT_KEY=...
+INNGEST_SIGNING_KEY=...
+```
+
+### 3. Run the Development Server
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to access the application.
+
+Navigate to [http://localhost:3000/evals](http://localhost:3000/evals) to start working with your prompts.
+
+## Finding Your Langfuse Project ID
+
+1. Log into your Langfuse account at https://cloud.langfuse.com
+2. Navigate to any page in your project (e.g., Prompts, Traces, etc.)
+3. Look at the URL in your browser address bar
+4. The project ID is the string after `/project/`
+
+Example URL:
+```
+https://us.cloud.langfuse.com/project/cme8s6dl501fbad07hhojh4r6/prompts
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+                                     This is your project ID
+```
+
+## Usage
+
+### Viewing Prompts
+
+1. Navigate to `/evals` to see all your Langfuse prompts
+2. Prompts are organized in a folder hierarchy based on their names (e.g., `workflow/intake-acceptance-criteria`)
+3. Click on any prompt to view its details, usage stats, and run evaluations
+
+### Running Evaluations
+
+1. Open a prompt and click the "Draft & Eval" tab
+2. Edit the prompt template to create a variation
+3. Select historical traces to test against
+4. Choose your model provider (OpenAI or Gemini) and model
+5. Click "Run Eval" to see side-by-side comparisons
+
+### Fine-tuning Models
+
+1. Navigate to `/evals/finetune`
+2. Select a prompt to pull training data from Langfuse traces
+3. Review and validate the generated training examples
+4. Save to blob storage and start an OpenAI fine-tuning job
+
+## Architecture
+
+- **Frontend**: Next.js 15 App Router with React Server Components
+- **Styling**: Tailwind CSS with shadcn/ui components
+- **Background Jobs**: Inngest for async eval execution
+- **Observability**: Langfuse for prompt management and trace tracking
+- **Storage**: Vercel Blob for eval results and training data
+- **LLM Providers**: OpenAI and Google Gemini (extensible)
+
+## Project Structure
+
+```
+app/
+  ├── evals/           # Main evals UI
+  │   ├── page.tsx     # Prompt browser
+  │   ├── finetune/    # Fine-tuning UI
+  │   └── components/  # Eval UI components
+  ├── api/
+  │   ├── evals/       # Eval API routes
+  │   ├── langfuse/    # Langfuse proxy endpoints
+  │   └── inngest/     # Inngest webhook handler
+lib/
+  ├── inngest/
+  │   └── eval/        # Eval execution logic
+  ├── ai/              # LLM provider wrappers
+  └── observability/   # Langfuse helpers
+```
+
+## Contributing
+
+Contributions are welcome! Please open an issue or PR.
+
+## License
+
+MIT
