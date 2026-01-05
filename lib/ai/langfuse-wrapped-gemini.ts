@@ -49,7 +49,7 @@ export interface LangfuseWrappedGeminiParams<T = unknown> {
   // Tools for function calling (Gemini native tool format)
   tools?: Tool[];
 
-  // Langfuse tracing params (same pattern as masonOpenAI)
+  // Langfuse tracing params (same pattern as langfuseWrappedOpenAI)
   langfuseParams?: {
     traceId?: string;
     traceName?: string;
@@ -75,7 +75,7 @@ export interface LangfuseWrappedGeminiResult<T = unknown> {
 
 /**
  * Unified Gemini wrapper with automatic Langfuse logging.
- * Mirrors the masonOpenAI pattern for consistency.
+ * Mirrors the langfuseWrappedOpenAI pattern for consistency.
  *
  * @example Basic structured output:
  * ```ts
@@ -117,7 +117,7 @@ export async function langfuseWrappedGemini<T = unknown>({
   schema,
   tools,
   langfuseParams = {},
-}: MasonGeminiParams<T>): Promise<MasonGeminiResult<T> | null> {
+}: LangfuseWrappedGeminiParams<T>): Promise<LangfuseWrappedGeminiResult<T> | null> {
   const ai = getGeminiClient();
   const langfuse = getLangfuse();
 
@@ -359,7 +359,7 @@ function summarizePart(part: Part): unknown {
  * @example
  * ```ts
  * const file = await uploadFileToGemini(pdfBuffer, 'invoice.pdf', 'application/pdf');
- * const result = await masonGemini({
+ * const result = await langfuseWrappedGemini({
  *   contents: [
  *     "Extract invoice data",
  *     createPartFromUri(file.uri!, file.mimeType!)
@@ -423,7 +423,7 @@ export async function deleteGeminiFile(fileName: string): Promise<void> {
  * @example
  * ```ts
  * const result = await withGeminiRetry(
- *   () => masonGemini({ prompt: "Hello" }),
+ *   () => langfuseWrappedGemini({ prompt: "Hello" }),
  *   3, // maxRetries
  *   1000 // baseDelayMs
  * );

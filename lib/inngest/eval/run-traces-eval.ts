@@ -1,13 +1,13 @@
 import { langfuseWrappedGemini } from '@/lib/ai/langfuse-wrapped-gemini';
 import { langfuseWrappedOpenAI } from '@/lib/ai/langfuse-wrapped-openai';
 import { inngest } from '@/lib/inngest/client';
-import { openaiToolsToGeminiTools } from '@/lib/inngest/eval/openai-to-gemini-tools';
+import { openaiToolsToGeminiTools } from '@/lib/ai/openai-to-gemini-tools';
 import {
   getSchemaFromObservation,
   getToolsFromObservation,
   OpenAITool,
-} from '@/lib/inngest/eval/schema-registry';
-import { zodToGeminiSchema } from '@/lib/inngest/eval/zod-to-gemini-schema';
+} from '@/lib/ai/schema-registry';
+import { zodToGeminiSchema } from '@/lib/ai/zod-to-gemini-schema';
 import { getLangfuse } from '@/lib/observability/langfuse';
 import { storeDataInBlob } from '@/lib/utils/blob-storage';
 import { v4 as uuidv4 } from 'uuid';

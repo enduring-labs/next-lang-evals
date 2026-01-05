@@ -3,7 +3,7 @@
  * This allows us to use the same tool definitions for both OpenAI and Gemini evals.
  */
 
-import { OpenAITool } from '@/lib/inngest/eval/schema-registry';
+import { OpenAITool } from '@/lib/ai/schema-registry';
 import { FunctionDeclaration, Schema, Tool, Type } from '@google/genai';
 
 /**

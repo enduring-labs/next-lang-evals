@@ -18,7 +18,7 @@ import { Langfuse } from 'langfuse';
  *   dne_report_context: dneReportContext,
  * });
  *
- * await masonOpenAI({
+ * await langfuseWrappedOpenAI({
  *   messages,
  *   langfuseParams: {
  *     prompt,
