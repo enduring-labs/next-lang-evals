@@ -2,6 +2,8 @@
 
 **Test prompt changes against production data before deploying them.**
 
+> Open-sourced by Mason • [thisismason.com](https://thisismason.com)
+
 This application provides a simple UI to draft prompt variations, run them against your most recent production traces from Langfuse, and compare results side-by-side. Works with OpenAI and Google Gemini models.
 
 ## What This Does
